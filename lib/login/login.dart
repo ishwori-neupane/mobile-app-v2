@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firsttask/login/otp.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class MyPhone extends StatefulWidget {
   const MyPhone({super.key});
@@ -13,7 +15,11 @@ class MyPhone extends StatefulWidget {
 }
 
 class _MyPhoneState extends State<MyPhone> {
+  
+  String verificationID = "";
   TextEditingController countrycode = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController _PhoneController = TextEditingController();
   var phone = "";
   @override
   void initState() {
@@ -27,11 +33,13 @@ class _MyPhoneState extends State<MyPhone> {
         body: Container(
       margin: const EdgeInsets.only(left: 25, right: 25),
       alignment: Alignment.center,
+      child: Form(
+               key: _formKey,
       child: SingleChildScrollView(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Image.asset(
             width: 200,
-            'images/download.jpg',
+            'assets/images/download.jpg',
             fit: BoxFit.cover,
           ),
           const SizedBox(
@@ -64,8 +72,15 @@ class _MyPhoneState extends State<MyPhone> {
                 ),
                 SizedBox(
                   width: 40,
-                  child: TextField(
+                  child: TextFormField(
                     controller: countrycode,
+                   
+                validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Country Code is required !';
+              }
+              return null;
+            },
                     decoration: const InputDecoration(
                         border: InputBorder.none, hintText: "+977"),
                   ),
@@ -81,11 +96,17 @@ class _MyPhoneState extends State<MyPhone> {
                   width: 10,
                 ),
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
+                    controller: _PhoneController,
+                   
+                validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Phone number is required !';
+              }
+              return null;
+            },
                     keyboardType: TextInputType.phone,
-                    onChanged: (value) {
-                      phone = value;
-                    },
+                    
                     decoration: const InputDecoration(
                         border: InputBorder.none, hintText: "Phone"),
                   ),
@@ -104,25 +125,45 @@ class _MyPhoneState extends State<MyPhone> {
           ),
           ElevatedButton(
             onPressed: () async {
-              FirebaseAuth auth = FirebaseAuth.instance;
-              await auth.verifyPhoneNumber(
-                phoneNumber: '${countrycode.text + phone}',
-                verificationCompleted: (PhoneAuthCredential credential) {},
-                codeAutoRetrievalTimeout: (String verificationId) {},
-                codeSent: (String verificationId, int? forceResendingToken) {
-                  MyPhone.verify = verificationId;
-                },
-                verificationFailed: (FirebaseAuthException error) {},
-              );
-              Navigator.pushNamed(context, "otp");
+               if (_formKey.currentState!.validate()){
+
+              // FirebaseAuth auth = FirebaseAuth.instance;
+              // await auth.verifyPhoneNumber(
+              //   phoneNumber: '${countrycode.text + _PhoneController.text}',
+              //   verificationCompleted: (PhoneAuthCredential credential) {},
+              //   codeAutoRetrievalTimeout: (String verificationId) {},
+              //   codeSent: (String verificationId, int? forceResendingToken) {
+              //     MyPhone.verify = verificationId;
+              //   },
+              //   verificationFailed: (FirebaseAuthException error) {},
+              // );
+              FirebaseAuth _auth = FirebaseAuth.instance;
+              await _auth.verifyPhoneNumber(
+        phoneNumber: '${countrycode.text + _PhoneController.text}',
+        verificationCompleted: (phoneAuthCredential) async {},
+        verificationFailed: (verificationFailed) {
+          setState(() {});
+          print(verificationFailed);
+        },
+        codeSent: (verificationID, resendingToken) async {
+          setState(() {
+            this.verificationID = verificationID;
+          });
+          Navigator.pushNamed(context, "otp");
+        },
+        codeAutoRetrievalTimeout: (verificationID) async {});
+
+              
+              // Navigator.pushNamed(context, "otp");
+               }
             },
-            child: const Text("Next"),
+            child: const Text("Send Otp"),
             style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10))),
           )
         ]),
       ),
-    ));
+    )));
   }
 }
