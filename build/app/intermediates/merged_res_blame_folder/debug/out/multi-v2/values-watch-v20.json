@@ -4,7 +4,7 @@
             "outputFile": "/home/linux/Android/videorecorder/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
-                    "source": "/home/linux/.gradle/caches/transforms-3/8e3010740483d75c161f46936cb6df5f/transformed/jetified-play-services-auth-20.1.0/res/values-watch-v20/values.xml",
+                    "source": "/home/linux/.gradle/caches/transforms-3/b1bd0960ad32ff84bcf7a357013767fc/transformed/jetified-play-services-auth-20.1.0/res/values-watch-v20/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11",
                         "startColumns": "0,0,0,0,0,0,0,0",

@@ -1,14 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firsttask/login/otp.dart';
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class MyPhone extends StatefulWidget {
   const MyPhone({super.key});
   static String verify = "";
+  static String phonenumber = "";
 
   @override
   State<MyPhone> createState() => _MyPhoneState();
@@ -19,7 +17,7 @@ class _MyPhoneState extends State<MyPhone> {
   String verificationID = "";
   TextEditingController countrycode = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _PhoneController = TextEditingController();
+  final TextEditingController _PhoneController = TextEditingController();
   var phone = "";
   @override
   void initState() {
@@ -148,6 +146,8 @@ class _MyPhoneState extends State<MyPhone> {
         codeSent: (verificationID, resendingToken) async {
           setState(() {
             this.verificationID = verificationID;
+            MyPhone.verify = verificationID;
+            MyPhone.phonenumber = '${countrycode.text + _PhoneController.text}';
           });
           Navigator.pushNamed(context, "otp");
         },

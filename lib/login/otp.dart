@@ -1,9 +1,11 @@
+// ignore_for_file: unused_local_variable, use_build_context_synchronously, sort_child_properties_last
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firsttask/login/login.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:pinput/pinput.dart';
+
+import 'alert.dart';
 
 class MyOTP extends StatefulWidget {
   const MyOTP({super.key});
@@ -28,16 +30,9 @@ class _MyOTPState extends State<MyOTP> {
       ),
     );
 
-    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
-      border: Border.all(color: const Color.fromRGBO(114, 178, 238, 1)),
-      borderRadius: BorderRadius.circular(8),
-    );
+    
 
-    final submittedPinTheme = defaultPinTheme.copyWith(
-      decoration: defaultPinTheme.decoration?.copyWith(
-        color: const Color.fromRGBO(234, 239, 243, 1),
-      ),
-    );
+    
     var code = "";
     return Scaffold(
         extendBodyBehindAppBar: true,
@@ -63,7 +58,7 @@ class _MyOTPState extends State<MyOTP> {
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Image.asset(
                 width: 200,
-                'images/download.jpg',
+                'assets/images/download.jpg',
                 fit: BoxFit.cover,
               ),
               const SizedBox(
@@ -100,17 +95,25 @@ class _MyOTPState extends State<MyOTP> {
               ),
               ElevatedButton(
                 onPressed: () async {
+
                   FirebaseAuth auth = FirebaseAuth.instance;
-
-                  // Create a PhoneAuthCredential with the code
-                  PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                      verificationId: MyPhone.verify, smsCode: code);
-
-                  // Sign the user in (or link) with the credential
-                  await auth.signInWithCredential(credential);
-                  Navigator.pushNamed(context, "otp");
+              await auth.verifyPhoneNumber(
+        phoneNumber:MyPhone.phonenumber,
+        verificationCompleted: (phoneAuthCredential) async {},
+        verificationFailed: (verificationFailed) {
+          setState(() {});
+          print(verificationFailed);
+        },
+        codeSent: (verificationID, resendingToken) async {
+          setState(() {
+           MyPhone.verify = verificationID;
+          });
+          Navigator.pushNamed(context, "otp");
+        },
+        codeAutoRetrievalTimeout: (verificationID) async {});
+                  
                 },
-                child: const Text("Verify phone number."),
+                child: const Text("Resend Otp."),
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10))),
@@ -127,27 +130,49 @@ class _MyOTPState extends State<MyOTP> {
                 showCursor: true,
                 // onCompleted: (pin) => print(pin),
               ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "phone");
+              ElevatedButton(
+                  onPressed: () async{
+                    // Navigator.pushNamed(context, "phone");
+                    // print('fg');
+                    try{
+                        FirebaseAuth auth = FirebaseAuth.instance;
+
+                    PhoneAuthCredential credential = 
+                    PhoneAuthProvider.credential(verificationId: MyPhone.verify, smsCode: code);
+
+                  // Sign the user in (or link) with the credential
+                    await auth.signInWithCredential(credential);
+                     Navigator.pushNamed(context, "home");
+                    }catch(e){
+                      showErrorDialog(context , 'error' , 'wrong otp !');
+                    }
+                    
+                     
+
+              
+
+
                   },
-                  child: const Text("Get Started.")),
-              const Text("Do you wanna take video??"),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, "camera");
-                  },
-                  child: const Text("Take Video")),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "phone");
-                      },
-                      child: const Text("Back")),
-                ],
-              )
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
+                  child: const Text("Verify Otp.")),
+              // const Text("Do you wanna take video??"),
+              // TextButton(
+              //     onPressed: () {
+              //       Navigator.pushNamed(context, "camera");
+              //     },
+              //     child: const Text("Take Video")),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.end,
+              //   children: [
+              //     TextButton(
+              //         onPressed: () {
+              //           Navigator.pushNamed(context, "phone");
+              //         },
+              //         child: const Text("Back")),
+              //   ],
+              // )
             ]),
           ),
         ));

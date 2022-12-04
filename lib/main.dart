@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firsttask/home.dart';
 import 'package:flutter/material.dart';
 
 import 'camera/video.dart';
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
       routes: {
         'phone': (context) => MyPhone(),
         'camera': (context) => MyCamera(),
-        "otp": (context) => MyOTP()
+        "otp": (context) => MyOTP(),
+        "home": (context) => Home(),
       },
     );
   }
